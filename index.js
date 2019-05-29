@@ -5,11 +5,8 @@ var io = require('socket.io')(srv);
 var port = 9001;
 srv.listen(port);
 console.log('signaling server started on port:' + port);
- 
-// This callback function is called every time a socket
-// tries to connect to the server
+
 io.on('connection', function(socket) {
-    // ---- multi room ----
     socket.on('enter', function(roomname) {
       socket.join(roomname);
       console.log('id=' + socket.id + ' enter room=' + roomname);
@@ -26,9 +23,7 @@ io.on('connection', function(socket) {
     }
  
     function emitMessage(type, message) {
-      // ----- multi room ----
       var roomname = getRoomname();
- 
       if (roomname) {
         console.log('===== message broadcast to room -->' + roomname);
         socket.broadcast.to(roomname).emit(type, message);
@@ -38,36 +33,23 @@ io.on('connection', function(socket) {
         socket.broadcast.emit(type, message);
       }
     }
- 
-    // When a user send a SDP message
-    // broadcast to all users in the room
+
     socket.on('message', function(message) {
         var date = new Date();
         message.from = socket.id;
         console.log(date + 'id=' + socket.id + ' Received Message: ' + JSON.stringify(message));
- 
-        // get send target
         var target = message.sendto;
         if (target) {
           console.log('===== message emit to -->' + target);
           socket.to(target).emit('message', message);
           return;
         }
- 
-        // broadcast in room
         emitMessage('message', message);
     });
  
-    // When the user hangs up
-    // broadcast bye signal to all users in the room
     socket.on('disconnect', function() {
-        // close user connection
         console.log((new Date()) + ' Peer disconnected. id=' + socket.id);
- 
-        // --- emit ----
         emitMessage('user disconnected', {id: socket.id});
- 
-        // --- leave room --
         var roomname = getRoomname();
         if (roomname) {
           socket.leave(roomname);
@@ -75,17 +57,3 @@ io.on('connection', function(socket) {
     });
  
 });
-
-// var port = 9001;
-// var io = require('socket.io').listen(port);
-// console.log((new Date()) + " Server is listening on port " + port);
- 
-// io.sockets.on('connection', function(socket) {
-//   socket.on('message', function(message) {
-//     socket.broadcast.emit('message', message);
-//   });
- 
-//   socket.on('disconnect', function() {
-//     socket.broadcast.emit('user disconnected');
-//   });
-// });
