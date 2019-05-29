@@ -19,7 +19,7 @@ module.exports = {
       port : '50830',
       ref  : 'origin/master',
       repo : 'https://github.com/supunic/signaling_io.git',
-      path : '/var/www/signaling_ws',
+      path : '/var/www/signaling_io',
       'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
     }
   }
