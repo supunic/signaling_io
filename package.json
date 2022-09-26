@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pm2": "^3.5.1",
+    "pm2": "^5.2.0",
     "socket.io": "^2.2.0"
   }
 }
